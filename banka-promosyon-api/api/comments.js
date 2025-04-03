@@ -1,5 +1,5 @@
 // /api/comments.js
-import { supabase } from '../../utils/supabaseClient'
+import { supabase } from '../utils/supabase.js'
 import jwt from 'jsonwebtoken'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secretkey'

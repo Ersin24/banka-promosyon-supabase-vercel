@@ -1,6 +1,6 @@
 // /api/posts.js
-import { supabase } from '../../utils/supabaseClient';
-import { verifyToken, verifyAdmin } from '../../utils/auth';
+import { supabase } from '../utils/supabase.js';
+import { verifyToken, verifyAdmin } from '../utils/auth.js';
 
 export default async function handler(req, res) {
   const method = req.method;
