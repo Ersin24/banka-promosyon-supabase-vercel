@@ -42,8 +42,7 @@ export default async function handler(req, res) {
       content,
       created_at,
       user_id,
-      usernames(username),
-      comment_likes(user_id)
+      usernames(username)
     `
       )
       .eq("post_id", post_id)
