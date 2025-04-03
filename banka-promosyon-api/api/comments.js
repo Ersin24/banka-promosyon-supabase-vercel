@@ -33,43 +33,34 @@ export default async function handler(req, res) {
     if (!post_id) {
       return res.status(400).json({ error: "post_id parametresi gerekli" });
     }
-
+  
     let { data, error } = await supabase
       .from("comments")
-      .select(
-        `
-      id,
-      content,
-      created_at,
-      user_id,
-      usernames(username)
-    `
-      )
+      .select(`
+        id,
+        content,
+        created_at,
+        user_id,
+        usernames(username)
+      `)
       .eq("post_id", post_id)
       .order("created_at", { ascending: false });
-
+  
     if (error) {
       console.error("Yorumlar çekilirken hata:", error);
       return res.status(500).json({ error: error.message });
     }
-
-    // Beğeni sayısını ve kullanıcının beğenip beğenmediğini hesapla
-    const formatted = data.map((comment) => {
-      const likeCount = comment.comment_likes?.length || 0;
-      const liked = userId
-        ? comment.comment_likes.some((l) => l.user_id === userId)
-        : false;
-      return {
-        id: comment.id,
-        content: comment.content,
-        created_at: comment.created_at,
-        user_id: comment.user_id,
-        username: comment.usernames?.username || null,
-        like_count: likeCount,
-        liked,
-      };
-    });
-
+  
+    const formatted = data.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      created_at: comment.created_at,
+      user_id: comment.user_id,
+      username: comment.usernames?.username || null,
+      like_count: 0, // Şimdilik 0 veriyoruz
+      liked: false   // Şimdilik false
+    }));
+  
     return res.status(200).json(formatted);
   }
 
