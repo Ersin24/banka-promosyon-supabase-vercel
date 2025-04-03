@@ -38,16 +38,21 @@ export default async function handler(req, res) {
       .from("comments")
       .select(
         `
-        *,
-        usernames(username),
-        comment_likes(count),
-        comment_likes!inner(user_id)
-      `
+      id,
+      content,
+      created_at,
+      user_id,
+      usernames(username),
+      comment_likes(user_id)
+    `
       )
       .eq("post_id", post_id)
       .order("created_at", { ascending: false });
 
-    if (error) return res.status(500).json({ error: error.message });
+    if (error) {
+      console.error("Yorumlar çekilirken hata:", error);
+      return res.status(500).json({ error: error.message });
+    }
 
     // Beğeni sayısını ve kullanıcının beğenip beğenmediğini hesapla
     const formatted = data.map((comment) => {
