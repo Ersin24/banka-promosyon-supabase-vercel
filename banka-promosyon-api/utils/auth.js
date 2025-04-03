@@ -1,6 +1,6 @@
 // utils/auth.js
 import jwt from 'jsonwebtoken';
-import { supabase } from './supabaseClient';
+import { supabase } from './supabase.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
 
