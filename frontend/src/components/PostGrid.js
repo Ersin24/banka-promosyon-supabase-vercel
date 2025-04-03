@@ -34,6 +34,14 @@ const PostGrid = () => {
       }
 
       const { data } = await axios.get(`${API_URL}/posts`, { params });
+
+         // 💥 Güvenli kontrol
+      if (!Array.isArray(data)) {
+        console.error("Beklenmeyen veri formatı:", data);
+        setPosts([]);
+        setHasMore(false);
+        return;
+      }
       
       if (pageNum === 0) {
         setPosts(data);
