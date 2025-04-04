@@ -86,6 +86,13 @@ export default async function handler(req, res) {
       const { data: signInData, error: loginError } =
         await supabase.auth.signInWithPassword({ email, password });
       if (loginError) return res.status(401).json({ error: "Geçersiz giriş." });
+      
+      // Admin kontrolü
+      const { data: adminRow } = await supabase
+        .from("admins")
+        .select("is_admin")
+        .eq("id", signInData.user.id)
+        .maybeSingle();
 
       const token = jwt.sign(
         { userId: signInData.user.id,
@@ -95,12 +102,6 @@ export default async function handler(req, res) {
         { expiresIn: "1h" }
       );
 
-      // Admin kontrolü
-      const { data: adminRow } = await supabase
-        .from("admins")
-        .select("is_admin")
-        .eq("id", signInData.user.id)
-        .maybeSingle();
 
       return res.json({ token, isAdmin: adminRow?.is_admin || false });
     }
