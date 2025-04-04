@@ -2,13 +2,14 @@
 
 import { createClient } from "@supabase/supabase-js";
 import jwt from "jsonwebtoken";
+import { allowCors } from "./_cors";
 
 const supabase = createClient(
   process.env.REACT_APP_SUPABASE_URL,
   process.env.REACT_APP_SUPABASE_ANON_KEY
 );
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   // --- CORS BAŞLANGIÇ ---
   res.setHeader("Access-Control-Allow-Credentials", true);
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -120,3 +121,5 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: "Method not allowed" });
 }
+
+export default allowCors(handler)
