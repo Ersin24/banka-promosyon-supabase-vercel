@@ -86,7 +86,7 @@ const Login = () => {
             alignItems="center" // Yatayda ortalamak için
             width={{ base: "60%", sm: "60%" }} // Küçük ekranlarda boyutu küçültüyoruz
           >
-            <ForgetPassword width="100%" height="auto" />
+            <ForgetPassword width="100%" height="100%" />
           </Box>
 
           {/* Giriş Formu */}
