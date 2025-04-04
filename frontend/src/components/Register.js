@@ -27,7 +27,8 @@ const Register = () => {
   const handleRegister = async () => {
     setLoading(true);
     try {
-      await axios.post(`${API_URL}/auth/register`, {
+      await axios.post(`${API_URL}/auth`, {
+        type: "register",
         email,
         password,
         username,
