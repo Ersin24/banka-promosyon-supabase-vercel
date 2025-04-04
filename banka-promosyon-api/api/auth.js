@@ -66,9 +66,18 @@ export default async function handler(req, res) {
 
       if (error) return res.status(500).json({ error: error.message });
 
+      const userId = createdUser.user.id;
+
+      //users tablosu
+      await supabase.from("users").insert({
+        id: userId,
+        email,
+        created_at: new Date().toISOString()
+      })
+
       await supabase
         .from("usernames")
-        .insert({ user_id: createdUser.user.id, username });
+        .insert({ user_id: userId, username });
 
       return res.status(201).json({ message: "Kayıt başarılı" });
     }
