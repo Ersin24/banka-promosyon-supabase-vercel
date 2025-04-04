@@ -10,13 +10,19 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   // --- CORS BAŞLANGIÇ ---
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", true);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-CSRF-Token, X-Requested-With, Accept, Content-Type, Authorization"
+    );
 
-  if (req.method === "OPTIONS") {
-    return res.status(200).end(); // CORS preflight için erken çıkış
-  }
+    if (req.method === "OPTIONS") {
+      res.status(200).end();
+      return;
+    }
+
   // --- CORS BİTİŞ ---
   const { method, query, body, headers } = req;
 
