@@ -88,7 +88,9 @@ export default async function handler(req, res) {
       if (loginError) return res.status(401).json({ error: "Geçersiz giriş." });
 
       const token = jwt.sign(
-        { userId: signInData.user.id },
+        { userId: signInData.user.id,
+          isAdmin: adminRow?.is_admin || false
+         },
         process.env.JWT_SECRET || "secretkey",
         { expiresIn: "1h" }
       );
