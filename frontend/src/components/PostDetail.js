@@ -164,6 +164,9 @@ const PostDetail = () => {
           isClosable: true,
         });
       } catch (error) {
+        if(error.response && error.response.data.error === "Zaten beğenilmiş"){
+          console.error("Zaten beğenilmiş")
+        }
         console.error("Beğeni eklenirken hata:", error);
         toast({
           title: "Hata",
