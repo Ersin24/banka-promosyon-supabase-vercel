@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     const user = await verifyToken(req, res);
     if (!user) return; // verifyToken zaten response döner
 
-    const adminCheck = await verifyAdmin(user.id);
+    const adminCheck = await verifyAdmin(user.userId);
     if (!adminCheck)
       return res.status(403).json({ error: "Admin yetkisi gerekli" });
 
