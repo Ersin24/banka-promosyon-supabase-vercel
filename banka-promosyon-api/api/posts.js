@@ -19,16 +19,13 @@ export default async function handler(req, res) {
     if (method === "GET") {
       const { bank, category, search, limit = 10, offset = 0 } = req.query;
     
-      // SELECT içerisinde iki hesaplanmış alan ekliyoruz:
-      // - status_order: Eğer end_date şu anki tarihten büyükse 0, aksi halde 1
-      // - remaining_time: Eğer post aktifse, end_date - now() değeri; aksi halde NULL
+      // Hesaplanmış alanları tek satırda, düzgün aralıklarla belirtiyoruz.
       let query = supabase
         .from("posts")
-        .select(`
-          *,
-          (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as status_order,
-          (CASE WHEN end_date >= now() THEN (end_date - now()) END) as remaining_time
-        `, { count: "exact" });
+        .select(
+          "*, (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as status_order, (CASE WHEN end_date >= now() THEN (end_date - now()) END) as remaining_time",
+          { count: "exact" }
+        );
     
       if (bank) query = query.ilike("bank_name", `%${bank}%`);
       if (category) query = query.ilike("category", `%${category}%`);
@@ -36,8 +33,7 @@ export default async function handler(req, res) {
         query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
       }
     
-      // Önce aktif (status_order=0) postlar, sonra süresi dolmuş (status_order=1) postlar gelsin.
-      // Aktif postlar kendi arasında kalan süreye (remaining_time) göre artan (küçükten büyüğe) sıralansın.
+      // İlk olarak aktif postları (status_order = 0) sonraki kısmında aktifler kendi arasında kalan süreye göre sıralanıyor.
       query = query.order("status_order", { ascending: true })
                    .order("remaining_time", { ascending: true });
     
@@ -50,6 +46,7 @@ export default async function handler(req, res) {
       if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json(data);
     }
+    
     
   
     if (method === "POST") {
