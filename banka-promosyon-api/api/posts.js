@@ -19,8 +19,8 @@ export default async function handler(req, res) {
     if (method === "GET") {
       const { bank, category, search, limit = 10, offset = 0 } = req.query;
     
-      // Hesaplanmış alanların alias isimlerini çift tırnak içinde veriyoruz.
-      const selectString = `*, (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as "status_order", (CASE WHEN end_date >= now() THEN (end_date - now()) END) as "remaining_time"`;
+      // Computed alanları içeren select ifadesi:
+      const selectString = `*, (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as "status_order", (CASE WHEN end_date >= now() THEN EXTRACT(EPOCH FROM (end_date - now())) END) as "remaining_time"`;
     
       let query = supabase
         .from("posts")
@@ -32,6 +32,7 @@ export default async function handler(req, res) {
         query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
       }
     
+      // Önce aktif postlar (status_order=0), sonra aktifler içinde kalan süreye göre sıralama
       query = query.order("status_order", { ascending: true })
                    .order("remaining_time", { ascending: true });
     
