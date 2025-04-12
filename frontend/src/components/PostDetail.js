@@ -322,7 +322,7 @@ const PostDetail = () => {
               <Box key={comment.id} p={4} borderWidth="1px" borderRadius="md">
                 <HStack justifyContent="space-between">
                   <Text fontWeight="bold" fontSize={"xs"}>
-                    @{comment.username || "Anonim"}
+                    @{comment.usernames?.username || "Anonim"}
                   </Text>
                   <Text fontSize="sm" color="gray.500">
                     {new Date(comment.created_at).toLocaleString()}
