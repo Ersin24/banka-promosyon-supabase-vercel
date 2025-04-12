@@ -19,13 +19,12 @@ export default async function handler(req, res) {
     if (method === "GET") {
       const { bank, category, search, limit = 10, offset = 0 } = req.query;
     
-      // Hesaplanmış alanları tek satırda, düzgün aralıklarla belirtiyoruz.
+      // Hesaplanmış alanların alias isimlerini çift tırnak içinde veriyoruz.
+      const selectString = `*, (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as "status_order", (CASE WHEN end_date >= now() THEN (end_date - now()) END) as "remaining_time"`;
+    
       let query = supabase
         .from("posts")
-        .select(
-          "*, (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as status_order, (CASE WHEN end_date >= now() THEN (end_date - now()) END) as remaining_time",
-          { count: "exact" }
-        );
+        .select(selectString, { count: "exact" });
     
       if (bank) query = query.ilike("bank_name", `%${bank}%`);
       if (category) query = query.ilike("category", `%${category}%`);
@@ -33,7 +32,6 @@ export default async function handler(req, res) {
         query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
       }
     
-      // İlk olarak aktif postları (status_order = 0) sonraki kısmında aktifler kendi arasında kalan süreye göre sıralanıyor.
       query = query.order("status_order", { ascending: true })
                    .order("remaining_time", { ascending: true });
     
@@ -46,6 +44,7 @@ export default async function handler(req, res) {
       if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json(data);
     }
+    
     
     
   
