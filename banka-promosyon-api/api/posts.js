@@ -16,35 +16,37 @@ export default async function handler(req, res) {
   try {
     const method = req.method;
 
-    if (method === "GET") {
-      const { bank, category, search, limit = 10, offset = 0 } = req.query;
-    
-      // Computed alanları içeren select ifadesi:
-      const selectString = `*, (CASE WHEN end_date >= now() THEN 0 ELSE 1 END) as "status_order", (CASE WHEN end_date >= now() THEN EXTRACT(EPOCH FROM (end_date - now())) END) as "remaining_time"`;
-    
-      let query = supabase
-        .from("posts")
-        .select(selectString, { count: "exact" });
-    
-      if (bank) query = query.ilike("bank_name", `%${bank}%`);
-      if (category) query = query.ilike("category", `%${category}%`);
-      if (search) {
-        query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
-      }
-    
-      // Önce aktif postlar (status_order=0), sonra aktifler içinde kalan süreye göre sıralama
-      query = query.order("status_order", { ascending: true })
-                   .order("remaining_time", { ascending: true });
-    
-      query = query.range(
-        parseInt(offset),
-        parseInt(offset) + parseInt(limit) - 1
-      );
-    
-      const { data, error } = await query;
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(200).json(data);
-    }
+    // /api/posts.js (GET metodu)
+if (method === "GET") {
+  const { bank, category, search, limit = 10, offset = 0 } = req.query;
+
+  // VIEW üzerinden select yapıyoruz.
+  let query = supabase
+    .from("posts_view")
+    .select("*", { count: "exact" });
+
+  if (bank) query = query.ilike("bank_name", `%${bank}%`);
+  if (category) query = query.ilike("category", `%${category}%`);
+  if (search) {
+    query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+  }
+
+  // Sıralama:
+  // İlk olarak status_order sütununa (0: aktif, 1: süresi dolmuş) göre, sonra
+  // aktif postlar kendi içinde remaining_time (kalan süre, saniye cinsinden) değerine göre sıralanır.
+  query = query.order("status_order", { ascending: true })
+               .order("remaining_time", { ascending: true });
+
+  query = query.range(
+    parseInt(offset),
+    parseInt(offset) + parseInt(limit) - 1
+  );
+
+  const { data, error } = await query;
+  if (error) return res.status(500).json({ error: error.message });
+  return res.status(200).json(data);
+}
+
     
     
     
