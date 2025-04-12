@@ -36,7 +36,7 @@ export default async function handler(req, res) {
   
     const { data, error } = await supabase
       .from("comments")
-      .select("*, usernames(username)")
+      .select("*, usernames(username), comment_likes(user_id)")
       .eq("post_id", post_id)
       .order("created_at", { ascending: false });
   

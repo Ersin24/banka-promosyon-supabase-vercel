@@ -1,4 +1,3 @@
-// src/components/PostDetail.js
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -21,9 +20,20 @@ import {
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { FaThumbsUp, FaArrowRight } from "react-icons/fa";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 import SEO from "./SEO";
 
+// Basit token decode işlemi için (jwt-decode kütüphanesini de kullanabilirsiniz)
+const getCurrentUserId = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.userId; // Token payload'ınız { userId, isAdmin, ... } şeklinde ise
+  } catch (err) {
+    return null;
+  }
+};
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -33,6 +43,7 @@ const PostDetail = () => {
   const [commentContent, setCommentContent] = useState("");
   const toast = useToast();
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+  const currentUserId = getCurrentUserId();
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -55,6 +66,7 @@ const PostDetail = () => {
       try {
         const token = localStorage.getItem("token");
         const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+        // GET sorgusunda, ilişkisel olarak usernames ve comment_likes verilerini da alıyoruz
         const commentsRes = await axios.get(`${API_URL}/comments?post_id=${id}`, config);
         setComments(commentsRes.data);
       } catch (error) {
@@ -145,13 +157,18 @@ const PostDetail = () => {
     const comment = comments[index];
     const config = { headers: { Authorization: `Bearer ${token}` } };
 
-    if (!comment.liked) {
+    // Mevcut kullanıcının beğenip beğenmediğini kontrol edelim:
+    const liked = comment.comment_likes
+      ? comment.comment_likes.some((like) => like.user_id === currentUserId)
+      : false;
+
+    if (!liked) {
       try {
         await axios.post(`${API_URL}/comment-likes`, { comment_id: commentId }, config);
+        // Yerel state güncellemesi: yeni beğeni ekleniyor
         const updatedComment = {
           ...comment,
-          liked: true,
-          like_count: Number(comment.like_count) + 1,
+          comment_likes: comment.comment_likes ? [...comment.comment_likes, { user_id: currentUserId }] : [{ user_id: currentUserId }],
         };
         const newComments = [...comments];
         newComments[index] = updatedComment;
@@ -164,9 +181,6 @@ const PostDetail = () => {
           isClosable: true,
         });
       } catch (error) {
-        if(error.response && error.response.data.error === "Zaten beğenilmiş"){
-          console.error("Zaten beğenilmiş")
-        }
         console.error("Beğeni eklenirken hata:", error);
         toast({
           title: "Hata",
@@ -182,10 +196,10 @@ const PostDetail = () => {
           params: { comment_id: commentId },
           headers: { Authorization: `Bearer ${token}` },
         });
+        // Yerel state güncellemesi: beğeni kaldırılıyor
         const updatedComment = {
           ...comment,
-          liked: false,
-          like_count: Number(comment.like_count) - 1,
+          comment_likes: comment.comment_likes.filter((like) => like.user_id !== currentUserId),
         };
         const newComments = [...comments];
         newComments[index] = updatedComment;
@@ -232,19 +246,18 @@ const PostDetail = () => {
     );
   }
 
-   // Açıklama metnini, satır sonlarına göre bölüyoruz (örneğin admin panelinde satır satır girildiğini varsayıyoruz)
-   const sentences = post.content.split(/(?<=[.!?])\s+/).filter(sentence => sentence.trim() !== "");
+  // İçeriği satır sonlarına göre bölüyoruz.
+  const sentences = post.content.split(/(?<=[.!?])\s+/).filter(sentence => sentence.trim() !== "");
 
-    // SEO için dinamik içerikler
+  // SEO için dinamik içerik ayarlaması
   const seoTitle = `${post.bank_name} - ${post.title} | Banka Promosyonları`;
   const seoDescription = post.content.slice(0, 160);
   const seoKeywords = `${post.bank_name}, ${post.category}, banka kampanyası, promosyonlar`;
   const seoUrl = `https://sitenizin-adresi.com/kampanyalar/${id}`;
 
-
   return (
     <Box maxW={{ base: "100%", md: "70%" }} mx="auto" p={1}>
-        <SEO
+      <SEO
         title={seoTitle}
         description={seoDescription}
         keywords={seoKeywords}
@@ -252,7 +265,6 @@ const PostDetail = () => {
         image={post.image_url}
       />
 
-      {/* Responsive: Masaüstünde resim ve post başlığı yan yana */}
       <Flex direction={{ base: "column", md: "row" }} gap={4} align="center">
         <Box w={{ base: "100%", md: "50%" }}>
           <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
@@ -272,22 +284,22 @@ const PostDetail = () => {
         </Box>
       </Flex>
 
-      {/* Post İçeriği */}
       <Box mt={4}>
         <List spacing={2}>
           {sentences.map((sentence, idx) => (
-            <ListItem key={idx} fontFamily={"serif"} > 
-              <ListIcon as={FaArrowRight}  color={"green.500"} /> {sentence}
+            <ListItem key={idx} fontFamily={"serif"}>
+              <ListIcon as={FaArrowRight} color={"green.500"} /> {sentence}
             </ListItem>
           ))}
         </List>
-    
         <Flex justifyContent="space-between" flexWrap="wrap">
           <Text fontWeight="bold">Banka: {post.bank_name}</Text>
           <Text fontWeight="bold">Kategori: {post.category}</Text>
         </Flex>
         <Text mt={2}>
-          {isExpired ? "Süresi Doldu" : remainingDays <= 3
+          {isExpired
+            ? "Süresi Doldu"
+            : remainingDays <= 3
             ? remainingDays === 1
               ? "Son Gün!"
               : remainingDays === 2
@@ -297,7 +309,6 @@ const PostDetail = () => {
         </Text>
       </Box>
 
-      {/* Yorum Bölümü */}
       <Box mt={8}>
         <Text fontSize="xl" fontWeight="bold" mb={4}>
           Yorumlar
@@ -318,28 +329,38 @@ const PostDetail = () => {
           <Text>Henüz yorum yapılmamış.</Text>
         ) : (
           <VStack spacing={4} align="stretch">
-            {comments.map((comment) => (
-              <Box key={comment.id} p={4} borderWidth="1px" borderRadius="md">
-                <HStack justifyContent="space-between">
-                  <Text fontWeight="bold" fontSize={"xs"}>
-                    @{comment.usernames?.username || "Anonim"}
+            {comments.map((comment) => {
+              // Hesaplama: beğeni sayısını ve mevcut kullanıcının beğenip beğenmediğini belirleyelim
+              const likeCount = comment.comment_likes ? comment.comment_likes.length : 0;
+              const liked = comment.comment_likes
+                ? comment.comment_likes.some(like => like.user_id === currentUserId)
+                : false;
+
+              return (
+                <Box key={comment.id} p={4} borderWidth="1px" borderRadius="md">
+                  <HStack justifyContent="space-between">
+                    <Text fontWeight="bold" fontSize={"xs"}>
+                      @{comment.usernames?.username || "Anonim"}
+                    </Text>
+                    <Text fontSize="sm" color="gray.500">
+                      {new Date(comment.created_at).toLocaleString()}
+                    </Text>
+                  </HStack>
+                  <Text fontFamily={"serif"} fontSize={"1.1em"} mt={2}>
+                    {comment.content}
                   </Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {new Date(comment.created_at).toLocaleString()}
-                  </Text>
-                </HStack>
-                <Text fontFamily={"serif"} fontSize={"1.1em"} mt={2}>{comment.content}</Text>
-                <HStack
-                  mt={2}
-                  spacing={1}
-                  cursor="pointer"
-                  onClick={() => handleToggleLike(comment.id)}
-                >
-                  <FaThumbsUp color={comment.liked ? "blue" : "gray"} />
-                  <Text>{comment.like_count}</Text>
-                </HStack>
-              </Box>
-            ))}
+                  <HStack
+                    mt={2}
+                    spacing={1}
+                    cursor="pointer"
+                    onClick={() => handleToggleLike(comment.id)}
+                  >
+                    <FaThumbsUp color={liked ? "blue" : "gray"} />
+                    <Text>{likeCount}</Text>
+                  </HStack>
+                </Box>
+              );
+            })}
           </VStack>
         )}
       </Box>
