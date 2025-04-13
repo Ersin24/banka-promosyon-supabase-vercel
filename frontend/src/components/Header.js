@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Flex,
   Box,
@@ -10,10 +10,10 @@ import {
   Text,
   HStack,
   useBreakpointValue,
-} from '@chakra-ui/react';
-import { FaUserCircle, FaFilter } from 'react-icons/fa';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { isTokenValid, isAdminUser } from '../utils/auth';
+} from "@chakra-ui/react";
+import { FaUserCircle, FaFilter } from "react-icons/fa";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { isTokenValid, isAdminUser } from "../utils/auth";
 
 const Header = ({ onOpenFilter }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -24,12 +24,12 @@ const Header = ({ onOpenFilter }) => {
 
   // Fonksiyon: token değişikliklerini kontrol etmek için
   const checkToken = () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token && isTokenValid()) {
       setIsLoggedIn(true);
       setIsAdmin(isAdminUser());
     } else {
-      localStorage.removeItem("token")
+      localStorage.removeItem("token");
       setIsLoggedIn(false);
       setIsAdmin(false);
     }
@@ -48,10 +48,10 @@ const Header = ({ onOpenFilter }) => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setIsLoggedIn(false);
     setIsAdmin(false);
-    navigate('/giris-yap');
+    navigate("/giris-yap");
   };
 
   return (
@@ -67,11 +67,23 @@ const Header = ({ onOpenFilter }) => {
     >
       {/* Sol: Uygulama Logosu */}
       <Box flex="1">
-        <Link to="/"  style={{ textDecoration: "none" }} 
-      _hover={{ textDecoration: "none" }}>
-          <Text fontFamily={"Poppins, sans-serif"} fontSize="xl" fontWeight="bold" noOfLines={1}>
-            promosyonburada
-          </Text>
+        <Link
+          to="/"
+          style={{ textDecoration: "none" }}
+          _hover={{ textDecoration: "none" }}
+        >
+          <Box
+            fontFamily="'Poppins', sans-serif"
+            fontWeight="bold"
+            fontSize={{ base: "18px", md: "24px" }}
+          >
+            <Text as="span" color="#374151">
+              Cepte
+            </Text>
+            <Text as="span" color="#10B981">
+              Bonus
+            </Text>
+          </Box>
         </Link>
       </Box>
       {/* Sağ Mobil Filtre butonu */}
@@ -102,8 +114,8 @@ const Header = ({ onOpenFilter }) => {
               variant="outline"
               aria-label="Profil Menü"
               border="none"
-              _hover={{ bg: 'gray.200' }}
-              _expanded={{ bg: 'gray.200' }}
+              _hover={{ bg: "gray.200" }}
+              _expanded={{ bg: "gray.200" }}
             />
             <MenuList color="black">
               {isLoggedIn ? (
