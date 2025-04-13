@@ -1,3 +1,4 @@
+// utils/auth.js
 import { jwtDecode } from "jwt-decode";
 
 // Token geçerliyse true, geçersizse false döner

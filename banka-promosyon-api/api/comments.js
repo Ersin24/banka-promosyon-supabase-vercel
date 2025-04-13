@@ -2,11 +2,15 @@
 import { supabase } from "../utils/supabase.js";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "secretkey";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET tanımsız! .env dosyanı kontrol et.");
+}
 
 export default async function handler(req, res) {
+  const allowedOrigin = process.env.FRONTEND_ORIGIN;
   // --- CORS BAŞLANGIÇ ---
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
@@ -53,7 +57,7 @@ export default async function handler(req, res) {
   if (method === "POST") {
     if (!userId) return res.status(401).json({ error: "Giriş gerekli" });
     const { post_id, content } = body;
-    if (!post_id || !content) {
+    if (!post_id?.trim() || !content.trim()) {
       return res.status(400).json({ error: "post_id ve content gerekli" });
     }
 

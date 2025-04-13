@@ -9,9 +9,10 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
+  const allowedOrigin = process.env.FRONTEND_ORIGIN;
   // --- CORS BAŞLANGIÇ ---
   res.setHeader("Access-Control-Allow-Credentials", true);
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
     res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
     res.setHeader(
       "Access-Control-Allow-Headers",
@@ -98,7 +99,7 @@ export default async function handler(req, res) {
         { userId: signInData.user.id,
           isAdmin: adminRow?.is_admin || false
          },
-        process.env.JWT_SECRET || "secretkey",
+        process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
 
@@ -113,7 +114,7 @@ export default async function handler(req, res) {
 
     const token = authHeader.split(" ")[1];
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "secretkey");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const { data: user } = await supabase
         .from("users")
         .select("id, email, created_at")

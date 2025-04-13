@@ -3,8 +3,9 @@ import { supabase } from "../utils/supabase.js";
 import { verifyToken, verifyAdmin } from "../utils/auth.js";
 
 export default async function handler(req, res) {
+  const allowedOrigin = process.env.FRONTEND_ORIGIN;
   // --- CORS BAŞLANGIÇ ---
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 

@@ -2,7 +2,11 @@
 import jwt from 'jsonwebtoken';
 import { supabase } from './supabase.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'secretkey';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET ortam değişkeni tanımlı değil! Güvenlik nedeniyle sunucu başlatılamaz.");
+}
 
 export const verifyToken = async (req, res) => {
   const authHeader = req.headers.authorization;
