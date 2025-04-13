@@ -2,7 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import jwt from "jsonwebtoken";
-import { checkRateLimit } from "../utils/rateLimiter";
+import { checkRateLimit } from "../utils/rateLimiter.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
