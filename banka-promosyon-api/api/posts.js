@@ -4,7 +4,7 @@ import { verifyToken, verifyAdmin } from "../utils/auth.js";
 import { sanitizeInput } from "../utils/sanitize.js";
 
 export default async function handler(req, res) {
-  const allowedOrigin = process.env.FRONTEND_ORIGIN;
+  const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
   // --- CORS BAŞLANGIÇ ---
   res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");

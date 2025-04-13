@@ -2,7 +2,7 @@
 import { supabase } from '../../utils/supabase.js';
 
 export default async function handler(req, res) {
-  const allowedOrigin = process.env.FRONTEND_ORIGIN;
+  const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
   // CORS başlıkları
   res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');

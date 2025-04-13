@@ -10,7 +10,7 @@ const supabase = createClient(
 );
 
 export default async function handler(req, res) {
-  const allowedOrigin = process.env.FRONTEND_ORIGIN;
+  const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
   // --- CORS BAŞLANGIÇ ---
   res.setHeader("Access-Control-Allow-Credentials", true);
     res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
