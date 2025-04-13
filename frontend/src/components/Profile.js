@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Text, Spinner, Button, VStack } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { isTokenValid } from '../utils/auth';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -13,7 +14,8 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       const token = localStorage.getItem('token');
-      if (!token) {
+      if (!token || !isTokenValid()) {
+        localStorage.removeItem("token")
         navigate('/giris-yap');
         return;
       }
@@ -23,6 +25,8 @@ const Profile = () => {
         setUser(res.data);
       } catch (error) {
         console.error("Profil bilgisi alınırken hata:", error);
+        localStorage.removeItem("token");
+        navigate("/giris-yap")
       }
       setLoading(false);
     };

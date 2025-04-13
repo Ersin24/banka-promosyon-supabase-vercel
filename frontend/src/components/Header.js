@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { FaUserCircle, FaFilter } from 'react-icons/fa';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import { isTokenValid, isAdminUser } from '../utils/auth';
 
 const Header = ({ onOpenFilter }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -25,16 +25,11 @@ const Header = ({ onOpenFilter }) => {
   // Fonksiyon: token değişikliklerini kontrol etmek için
   const checkToken = () => {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token && isTokenValid()) {
       setIsLoggedIn(true);
-      try {
-        const decoded = jwtDecode(token);
-        setIsAdmin(decoded.isAdmin === true);
-      } catch (error) {
-        console.error("Token decode hatası:", error);
-        setIsAdmin(false);
-      }
+      setIsAdmin(isAdminUser());
     } else {
+      localStorage.removeItem("token")
       setIsLoggedIn(false);
       setIsAdmin(false);
     }
