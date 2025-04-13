@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import jwt from "jsonwebtoken";
+import { checkRateLimit } from "../utils/rateLimiter";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -28,6 +29,9 @@ export default async function handler(req, res) {
   const { method, query, body, headers } = req;
 
   if (method === "POST") {
+
+    if(!(await checkRateLimit(req, res))) return;
+
     const { type, email, password, username } = body;
     if (type === "register") {
       if (!email || !password || !username) {

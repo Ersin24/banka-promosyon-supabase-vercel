@@ -1,4 +1,6 @@
 // /api/comments.js
+import { checkRateLimit } from "../utils/rateLimiter.js";
+import { sanitizeInput } from "../utils/sanitize.js";
 import { supabase } from "../utils/supabase.js";
 import jwt from "jsonwebtoken";
 
@@ -55,15 +57,19 @@ export default async function handler(req, res) {
 
   // POST yorum ekle
   if (method === "POST") {
+
+    if (!(await checkRateLimit(req, res))) return;
+
     if (!userId) return res.status(401).json({ error: "Giriş gerekli" });
     const { post_id, content } = body;
+    const cleanContent = sanitizeInput(content);
     if (!post_id?.trim() || !content.trim()) {
       return res.status(400).json({ error: "post_id ve content gerekli" });
     }
 
     const { data, error } = await supabase
       .from("comments")
-      .insert({ post_id, user_id: userId, content })
+      .insert({ post_id, user_id: userId, content: cleanContent })
       .select("*, usernames(username)")
       .single();
 
@@ -83,6 +89,7 @@ export default async function handler(req, res) {
 
     const { id } = query;
     const { content } = body;
+    const cleanContent = sanitizeInput(content)
     if (!id || !content) {
       return res.status(400).json({ error: "id ve content gerekli" });
     }
@@ -101,7 +108,7 @@ export default async function handler(req, res) {
 
     const { data, error } = await supabase
       .from("comments")
-      .update({ content })
+      .update({ content: cleanContent })
       .eq("id", id)
       .select()
       .single();

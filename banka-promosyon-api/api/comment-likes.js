@@ -1,4 +1,5 @@
 // /api/comment-likes.js
+import { checkRateLimit } from "../utils/rateLimiter.js";
 import { supabase } from "../utils/supabase.js";
 import jwt from "jsonwebtoken";
 
@@ -33,6 +34,8 @@ export default async function handler(req, res) {
 
   // POST: Yorum beğen
   if (method === "POST") {
+    if (!(await checkRateLimit(req, res))) return;
+    
     if (!userId) return res.status(401).json({ error: "Giriş gerekli" });
     const { comment_id } = body;
     if (!comment_id)

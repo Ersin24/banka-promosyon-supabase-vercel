@@ -1,6 +1,7 @@
 // /api/posts.js
 import { supabase } from "../utils/supabase.js";
 import { verifyToken, verifyAdmin } from "../utils/auth.js";
+import { sanitizeInput } from "../utils/sanitize.js";
 
 export default async function handler(req, res) {
   const allowedOrigin = process.env.FRONTEND_ORIGIN;
@@ -69,17 +70,22 @@ if (method === "GET") {
         start_date,
         end_date,
       } = req.body;
+
       if (!title || !content || !start_date || !end_date) {
         return res.status(400).json({ error: "Zorunlu alanlar eksik" });
       }
+
+      const cleanTitle = sanitizeInput(title)
+      const cleanContent = sanitizeInput(content)
+      const cleanImageUrl = sanitizeInput(image_url)
   
       const { data, error } = await supabase
         .from("posts")
         .insert([
           {
-            title,
-            content,
-            image_url,
+            title: cleanTitle,
+            content: cleanContent,
+            image_url: cleanImageUrl,
             bank_name,
             category,
             start_date,
