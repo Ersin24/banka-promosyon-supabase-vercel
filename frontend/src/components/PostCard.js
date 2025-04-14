@@ -32,22 +32,16 @@ const PostCard = ({ post }) => {
     <Link to={`/kampanyalar/${post.id}`}>
       <Box position="relative" borderWidth="1px" borderRadius="lg" overflow="hidden" cursor="pointer">
         {post.image_url ? (
-          <AspectRatio ratio={16/9} width={"100%"}>
-            <Image
-              loading='lazy'
-              src={post.image_url}
-              alt={post.title}
-              objectFit="cover"
-              onError={(e) => {
-                // Eğer placeholder'a zaten geçiş yapıldıysa tekrar değiştirmeyelim
-                if (e.target.src !== "https://placehold.co/300x200?text=Resim+Bulunamad%C4%B1") {
-                  // onError tetiklenmesinin tekrar çalışmasını engelle
-                  e.target.onerror = null;
-                  e.target.src = "https://placehold.co/300x200?text=Resim+Bulunamad%C4%B1";
-                }
-              }}
-            />
-          </AspectRatio>
+          <AspectRatio ratio={16 / 9} width={"100%"}>
+          <Image
+            loading="lazy"
+            src={post.image_url || "/no-image.svg"} // Eğer null veya boşsa doğrudan svg
+            alt={post.title}
+            objectFit="cover"
+            fallbackSrc="/no-image.svg" // Eğer yüklenemezse bu devreye girer
+            borderRadius="md"
+          />
+        </AspectRatio>
         ) : (
           <Text p={4} color="gray.500">Resim bulunamadı</Text>
         )}
