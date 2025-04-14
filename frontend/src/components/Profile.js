@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Text, Spinner, Button, VStack } from '@chakra-ui/react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { isTokenValid } from '../utils/auth';
+import { isTokenValid } from '../utils/auth.js';
 
 const Profile = () => {
   const [user, setUser] = useState(null);

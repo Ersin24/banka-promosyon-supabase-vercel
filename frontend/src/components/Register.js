@@ -1,3 +1,4 @@
+//components/Register.js
 import React, { useState } from "react";
 import {
   Box,
@@ -52,6 +53,12 @@ const Register = () => {
     }
     setLoading(false);
   };
+
+  const handlekeyPress = (e) => {
+    if(e.key === "Enter"){
+      handleRegister();
+    }
+  }
 
   return (
     <>
@@ -108,6 +115,7 @@ const Register = () => {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(DOMPurify.sanitize(e.target.value))}
+                onKeyDown={handlekeyPress}
               />
             </FormControl>
             <FormControl id="password" mb={4} isRequired>
@@ -118,6 +126,7 @@ const Register = () => {
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(DOMPurify.sanitize(e.target.value))}
+                onKeyDown={handlekeyPress}
               />
             </FormControl>
             <FormControl id="username" mb={4} isRequired>
@@ -128,6 +137,7 @@ const Register = () => {
                 autoComplete="username"
                 value={username}
                 onChange={(e) => setUsername(DOMPurify.sanitize(e.target.value))}
+                onKeyDown={handlekeyPress}
               />
             </FormControl>
             <Button

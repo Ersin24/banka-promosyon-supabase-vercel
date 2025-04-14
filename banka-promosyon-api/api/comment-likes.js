@@ -1,24 +1,22 @@
 // /api/comment-likes.js
 import { checkRateLimit } from "../utils/rateLimiter.js";
 import { supabase } from "../utils/supabase.js";
+import { setCorsHeaders } from "../utils/cors.js";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET tanımsız! .env dosyanı kontrol et.");
+  throw new Error("JWT_SECRET tanımsız!");
 }
 
 export default async function handler(req, res) {
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
-  // --- CORS BAŞLANGIÇ ---
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  setCorsHeaders(res, allowedOrigin);
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end(); // CORS preflight için erken çıkış
+    return res.status(200).end();
   }
-  // --- CORS BİTİŞ ---
+
   const { method, body, query, headers } = req;
   const token = headers.authorization?.split(" ")[1];
   let userId = null;
@@ -32,7 +30,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // POST: Yorum beğen
   if (method === "POST") {
     if (!(await checkRateLimit(req, res))) return;
     
@@ -62,7 +59,6 @@ export default async function handler(req, res) {
     return res.status(201).json(data);
   }
 
-  // DELETE: Yorum beğenisini kaldır
   if (method === "DELETE") {
     if (!userId) return res.status(401).json({ error: "Giriş gerekli" });
     const { comment_id } = query;
@@ -79,5 +75,5 @@ export default async function handler(req, res) {
     return res.status(200).json({ message: "Beğeni kaldırıldı" });
   }
 
-  return res.status(405).json({ error: "Method Not Allowed" });
+  return res.status(405).json({ error: "Yönteme izin verilmiyor" });
 }

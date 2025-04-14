@@ -2,23 +2,20 @@
 import { supabase } from "../utils/supabase.js";
 import { verifyToken, verifyAdmin } from "../utils/auth.js";
 import { sanitizeInput } from "../utils/sanitize.js";
+import { setCorsHeaders } from "../utils/cors.js";
 
 export default async function handler(req, res) {
+
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
-  // --- CORS BAŞLANGIÇ ---
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  setCorsHeaders(res, allowedOrigin);
 
   if (req.method === "OPTIONS") {
-    return res.status(200).end(); // CORS preflight için erken çıkış
+    return res.status(200).end();
   }
-  // --- CORS BİTİŞ ---
 
   try {
     const method = req.method;
 
-    // /api/posts.js (GET metodu)
 if (method === "GET") {
   const { bank, category, search, limit = 10, offset = 0 } = req.query;
 
@@ -48,10 +45,7 @@ if (method === "GET") {
   if (error) return res.status(500).json({ error: error.message });
   return res.status(200).json(data);
 }
-
-    
-    
-    
+ 
   
     if (method === "POST") {
       const user = await verifyToken(req, res);
@@ -97,11 +91,11 @@ if (method === "GET") {
       return res.status(201).json(data[0]);
     }
   
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Yönteme izin verilmiyor" });
   } catch (error) {
     console.error("API /posts Hatası:", error);
     return res.status(500).json({
-      error: error.message
+      error: "Sunucu hatası. Lütfen tekrar deneyin"
     })
   }
  

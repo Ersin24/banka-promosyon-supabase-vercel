@@ -1,3 +1,4 @@
+//components/Login.js
 import React, { useState } from "react";
 import { Box, Button, Input, FormControl, FormLabel, Flex, Heading } from "@chakra-ui/react";
 import axios from "axios";
@@ -41,6 +42,12 @@ const Login = () => {
       });
     }
   };
+
+  const handlekeyPress = (e) => {
+    if(e.key === "Enter"){
+      handleLogin();
+    }
+  }
 
   return (
     <>
@@ -109,6 +116,7 @@ const Login = () => {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(DOMPurify.sanitize(e.target.value))}
+                onKeyDown={handlekeyPress}
               />
             </FormControl>
             <FormControl id="password" mb={4}>
@@ -121,6 +129,7 @@ const Login = () => {
                 onChange={(e) =>
                   setPassword(DOMPurify.sanitize(e.target.value))
                 }
+                onKeyDown={handlekeyPress}
               />
             </FormControl>
             <Button colorScheme="blue" onClick={handleLogin} width="100%">

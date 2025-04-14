@@ -1,8 +1,8 @@
 // File: /api/auth.js
-
 import { createClient } from "@supabase/supabase-js";
 import jwt from "jsonwebtoken";
 import { checkRateLimit } from "../utils/rateLimiter.js";
+import { setCorsHeaders } from "../utils/cors.js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -11,21 +11,14 @@ const supabase = createClient(
 
 export default async function handler(req, res) {
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
-  // --- CORS BAŞLANGIÇ ---
-  res.setHeader("Access-Control-Allow-Credentials", true);
-    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-    res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "X-CSRF-Token, X-Requested-With, Accept, Content-Type, Authorization"
-    );
+  setCorsHeaders(res, allowedOrigin);
+  res.setHeader("Access-Control-Allow-Credentials", true); //ek olarak token
 
-    if (req.method === "OPTIONS") {
-      res.status(200).end();
-      return;
-    }
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
 
-  // --- CORS BİTİŞ ---
   const { method, query, body, headers } = req;
 
   if (method === "POST") {
@@ -135,5 +128,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(405).json({ error: "Method not allowed" });
+  return res.status(405).json({ error: "Yönteme izin verilmiyor" });
 }

@@ -1,12 +1,10 @@
 // /api/posts/[id].js
 import { supabase } from '../../utils/supabase.js';
+import { setCorsHeaders } from '../../utils/cors.js';
 
 export default async function handler(req, res) {
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
-  // CORS başlıkları
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  setCorsHeaders(res, allowedOrigin);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -28,5 +26,5 @@ export default async function handler(req, res) {
     return res.status(200).json(data);
   }
 
-  return res.status(405).json({ error: 'Method Not Allowed' });
+  return res.status(405).json({ error: 'Yönteme izin verilmiyor' });
 }

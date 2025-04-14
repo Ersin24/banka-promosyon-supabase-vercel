@@ -1,3 +1,4 @@
+//components/AdminRoute.js
 import { Navigate } from 'react-router-dom';
 import { isAdminUser } from '../utils/auth';
 

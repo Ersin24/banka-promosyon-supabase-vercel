@@ -4,7 +4,7 @@ import { SimpleGrid, Box, Spinner, Text, Input, HStack, Button } from "@chakra-u
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
-import PostCard from "./PostCard";
+import PostCard from "./PostCard.js";
 import DOMPurify from 'dompurify'
 
 const PostGrid = () => {

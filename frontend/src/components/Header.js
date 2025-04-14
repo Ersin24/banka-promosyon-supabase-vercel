@@ -1,3 +1,4 @@
+//components/Header.js
 import React, { useState, useEffect } from "react";
 import {
   Flex,
@@ -13,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { FaUserCircle, FaFilter } from "react-icons/fa";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { isTokenValid, isAdminUser } from "../utils/auth";
+import { isTokenValid, isAdminUser } from "../utils/auth.js";
 
 const Header = ({ onOpenFilter }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
