@@ -1,0 +1,7 @@
+<!-- public/image-placeholder.svg -->
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#f0f0f0"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#999" font-size="16">
+    Resim Yüklenemedi
+  </text>
+</svg>

@@ -41,12 +41,12 @@ const PostCard = ({ post }) => {
           <AspectRatio ratio={16 / 9} width={"100%"}>
             <Image
               loading="lazy"
-              src={post.image_url || "/no-image.svg"}
+              src={post.image_url}
               alt={post.title}
               objectFit="cover"
               onError={(e) => {
                 e.target.onerror = null; // sonsuz döngüyü önler
-                e.target.src = "/no-image.svg"; // ✅ yer tutucu SVG
+                e.target.src = "/image-placeholder.svg"; // ✅ yer tutucu SVG
               }}
             />
           </AspectRatio>
