@@ -1,7 +1,7 @@
 // src/components/PostCard.js
-import React from 'react';
-import { Box, Image, Text, Badge, AspectRatio } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Box, Image, Text, Badge, AspectRatio } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const PostCard = ({ post }) => {
   const today = new Date();
@@ -11,7 +11,7 @@ const PostCard = ({ post }) => {
   // Kalan gün sayısını hesaplıyoruz: Eğer fark 0 ise 0, pozitifse Math.ceil
   const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
   const isExpired = remainingDays < 0;
-  
+
   let badgeText = "";
   if (isExpired) {
     badgeText = "Süresi Doldu";
@@ -27,23 +27,33 @@ const PostCard = ({ post }) => {
   } else {
     badgeText = `${remainingDays} gün kaldı`;
   }
-  
+
   return (
     <Link to={`/kampanyalar/${post.id}`}>
-      <Box position="relative" borderWidth="1px" borderRadius="lg" overflow="hidden" cursor="pointer">
+      <Box
+        position="relative"
+        borderWidth="1px"
+        borderRadius="lg"
+        overflow="hidden"
+        cursor="pointer"
+      >
         {post.image_url ? (
           <AspectRatio ratio={16 / 9} width={"100%"}>
-          <Image
-            loading="lazy"
-            src={post.image_url || "/no-image.svg"} // Eğer null veya boşsa doğrudan svg
-            alt={post.title}
-            objectFit="cover"
-            fallbackSrc="/no-image.svg" // Eğer yüklenemezse bu devreye girer
-            borderRadius="md"
-          />
-        </AspectRatio>
+            <Image
+              loading="lazy"
+              src={post.image_url}
+              alt={post.title}
+              objectFit="cover"
+              onError={(e) => {
+                e.target.onerror = null; // sonsuz döngüyü önler
+                e.target.src = "/image-placeholder.svg"; // ✅ yer tutucu SVG
+              }}
+            />
+          </AspectRatio>
         ) : (
-          <Text p={4} color="gray.500">Resim bulunamadı</Text>
+          <Text p={4} color="gray.500">
+            Resim bulunamadı
+          </Text>
         )}
         <Badge
           position="absolute"
