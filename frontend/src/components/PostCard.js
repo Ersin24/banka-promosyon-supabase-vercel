@@ -46,7 +46,7 @@ const PostCard = ({ post }) => {
               objectFit="cover"
               onError={(e) => {
                 e.target.onerror = null; // sonsuz döngüyü önler
-                e.target.src = "/image-placeholder.svg"; // ✅ yer tutucu SVG
+                e.target.src = "/no-image.svg"; // ✅ yer tutucu SVG
               }}
             />
           </AspectRatio>
