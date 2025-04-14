@@ -1,0 +1,12 @@
+{
+  "files": {
+    "main.js": "/static/js/main.fdf0f1d3.js",
+    "static/media/undraw_with-love_rs1k.svg": "/static/media/undraw_with-love_rs1k.38b5006aca7f139ce2e12af7e98745cf.svg",
+    "static/media/undraw_forgot-password_odai.svg": "/static/media/undraw_forgot-password_odai.032cad2d9ae2dc0859dba615d819db71.svg",
+    "index.html": "/index.html",
+    "main.fdf0f1d3.js.map": "/static/js/main.fdf0f1d3.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.fdf0f1d3.js"
+  ]
+}
