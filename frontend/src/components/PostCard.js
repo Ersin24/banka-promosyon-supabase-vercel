@@ -41,7 +41,7 @@ const PostCard = ({ post }) => {
           <AspectRatio ratio={16 / 9} width={"100%"}>
             <Image
               loading="lazy"
-              src={post.image_url}
+              src={post.image_url || "/no-image.svg"}
               alt={post.title}
               objectFit="cover"
               onError={(e) => {
