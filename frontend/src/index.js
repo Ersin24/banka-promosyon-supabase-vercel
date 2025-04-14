@@ -17,8 +17,28 @@ root.render(
   </React.StrictMode>
 );
 
+// ✅ Service Worker Güncelleme Kontrolü
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js");
+    navigator.serviceWorker
+      .register("/service-worker.js")
+      .then((registration) => {
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          installingWorker.onstatechange = () => {
+            if (
+              installingWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              if (window.confirm("Yeni sürüm mevcut. Sayfayı yenilemek ister misiniz?")) {
+                window.location.reload();
+              }
+            }
+          };
+        };
+      })
+      .catch((error) => {
+        console.error("Service worker kaydı başarısız oldu:", error);
+      });
   });
 }
