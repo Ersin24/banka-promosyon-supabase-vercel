@@ -226,7 +226,11 @@ const PostDetail = () => {
   };
 
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // 🔒 Günlük hesaplama için saat sıfırlama
+  
   const postEndDate = post ? new Date(post.end_date) : today;
+  postEndDate.setHours(0, 0, 0, 0); // 🔒 Aynı şekilde bitiş tarihini de sıfırla
+  
   const timeDiff = postEndDate - today;
   const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
   const isExpired = remainingDays < 0;
@@ -280,6 +284,12 @@ const PostDetail = () => {
               alt={post.title}
               objectFit="cover"
               borderRadius="md"
+              onError={(e) => {
+                if (e.target.src !== "/image-placeholder.svg") {
+                  e.target.onerror = null;
+                  e.target.src = "/image-placeholder.svg";
+                }
+              }}
             />
           </AspectRatio>
         </Box>
