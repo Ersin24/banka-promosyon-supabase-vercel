@@ -40,7 +40,7 @@ if ("serviceWorker" in navigator) {
         };
       })
       .catch((err) => {
-        console.error("🚨 Service Worker kaydı başarısız:", err);
+        // console.error("🚨 Service Worker kaydı başarısız:", err);
       });
   });
 }
