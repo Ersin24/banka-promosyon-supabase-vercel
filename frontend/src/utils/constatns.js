@@ -18,4 +18,7 @@ export const bankOptions = [
     { value: "Yurt dışı Kampanyaları", label: "Yurt dışı Kampanyaları" },
     { value: "E-Ticaret", label: "E-Ticaret" },
     { value: "Ev / Mobilya / Beyaz Eşya", label: "Ev / Mobilya / Beyaz Eşya" },
+    { value: "Fatura, Dijital Platform", label: "Fatura, Dijital Platform" },
+    { value: "Eğitim, Kariyer", label: "Eğitim, Kariyer" },
+    { value: "Yapı Market", label: "Yapı Market" },
   ];
