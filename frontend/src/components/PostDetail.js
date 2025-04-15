@@ -232,7 +232,7 @@ const PostDetail = () => {
   postEndDate.setHours(0, 0, 0, 0); // 🔒 Aynı şekilde bitiş tarihini de sıfırla
   
   const timeDiff = postEndDate - today;
-  const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  const remainingDays = Math.floor(timeDiff / (1000 * 3600 * 24));
   const isExpired = remainingDays < 0;
 
   if (loading) {
