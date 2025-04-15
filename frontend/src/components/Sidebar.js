@@ -29,7 +29,7 @@ const Sidebar = ({ onFiltersChange }) => {
     );
     setSelectedBanks(initialBanks);
     setSelectedCategories(initialCategories);
-  }, [searchParams]);
+  }, [searchParams, categoryOptions]);
 
   // "Filtre Uygula" butonuna tıklandığında URL'yi güncelliyoruz
   const applyFilters = () => {
