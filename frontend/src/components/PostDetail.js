@@ -311,11 +311,11 @@ const PostDetail = () => {
           {isExpired
             ? "Süresi Doldu"
             : remainingDays <= 3
-            ? remainingDays === 1
+            ? remainingDays === 0
               ? "Son Gün!"
-              : remainingDays === 2
-              ? "Son 2 Gün!"
-              : "Son 3 Gün!"
+              : remainingDays === 1
+              ? "Son 1 Gün!"
+              : `Son ${remainingDays} Gün!`
             : `${remainingDays} gün kaldı`}
         </Text>
       </Box>
