@@ -16,35 +16,44 @@ export default async function handler(req, res) {
   try {
     const method = req.method;
 
-if (method === "GET") {
-  const { bank, category, search, limit = 10, offset = 0 } = req.query;
+    if (method === "GET") {
+      const { bank, category, search, limit = 10, offset = 0 } = req.query;
 
-  // VIEW üzerinden select yapıyoruz.
-  let query = supabase
-    .from("posts_view")
-    .select("*", { count: "exact" });
+      // VIEW üzerinden select yapıyoruz.
+      let query = supabase
+        .from("posts_view")
+        .select("*", { count: "exact" });
 
-  if (bank) query = query.ilike("bank_name", `%${bank}%`);
-  if (category) query = query.ilike("category", `%${category}%`);
-  if (search) {
-    query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
-  }
+      // Çoklu banka adı desteği
+      if (bank) {
+        const bankList = bank.split(",").map((b) => `bank_name.ilike.%${b}%`);
+        query = query.or(bankList.join(","));
+      }
 
-  // Sıralama:
-  // İlk olarak status_order sütununa (0: aktif, 1: süresi dolmuş) göre, sonra
-  // aktif postlar kendi içinde remaining_time (kalan süre, saniye cinsinden) değerine göre sıralanır.
-  query = query.order("status_order", { ascending: true })
-               .order("remaining_time", { ascending: true });
+      // Çoklu kategori desteği
+      if (category) {
+        const catList = category.split(",").map((c) => `category.ilike.%${c}%`);
+        query = query.or(catList.join(","));
+      }
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+      }
 
-  query = query.range(
-    parseInt(offset),
-    parseInt(offset) + parseInt(limit) - 1
-  );
+      // Sıralama:
+      // İlk olarak status_order sütununa (0: aktif, 1: süresi dolmuş) göre, sonra
+      // aktif postlar kendi içinde remaining_time (kalan süre, saniye cinsinden) değerine göre sıralanır.
+      query = query.order("status_order", { ascending: true })
+                  .order("remaining_time", { ascending: true });
 
-  const { data, error } = await query;
-  if (error) return res.status(500).json({ error: error.message });
-  return res.status(200).json(data);
-}
+      query = query.range(
+        parseInt(offset),
+        parseInt(offset) + parseInt(limit) - 1
+      );
+
+      const { data, error } = await query;
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(200).json(data);
+    }
  
   
     if (method === "POST") {
