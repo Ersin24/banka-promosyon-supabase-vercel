@@ -24,7 +24,7 @@ const Profile = () => {
         const res = await axios.get(`${API_URL}/auth/me`, config);
         setUser(res.data);
       } catch (error) {
-        console.error("Profil bilgisi alınırken hata:", error);
+        // console.error("Profil bilgisi alınırken hata:", error);
         localStorage.removeItem("token");
         navigate("/giris-yap")
       }

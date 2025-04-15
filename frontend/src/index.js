@@ -17,28 +17,30 @@ root.render(
   </React.StrictMode>
 );
 
-// ✅ Service Worker Güncelleme Kontrolü
+// src/index.js (en altına ekle)
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/service-worker.js")
       .then((registration) => {
+        console.log("✅ Service Worker başarıyla kayıt oldu:", registration);
+
+        // Güncelleme kontrolü
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
           installingWorker.onstatechange = () => {
-            if (
-              installingWorker.state === "installed" &&
-              navigator.serviceWorker.controller
-            ) {
-              if (window.confirm("Yeni sürüm mevcut. Sayfayı yenilemek ister misiniz?")) {
+            if (installingWorker.state === "installed") {
+              if (navigator.serviceWorker.controller) {
+                // Yeni içerik mevcut
                 window.location.reload();
-              }
+              } 
             }
           };
         };
       })
-      .catch((error) => {
-        console.error("Service worker kaydı başarısız oldu:", error);
+      .catch((err) => {
+        console.error("🚨 Service Worker kaydı başarısız:", err);
       });
   });
 }

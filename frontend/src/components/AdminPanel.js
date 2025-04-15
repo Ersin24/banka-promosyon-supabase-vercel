@@ -87,7 +87,7 @@ const AdminPanel = () => {
       setEndDate("");
       navigate("/");
     } catch (err) {
-      console.error(err);
+      // console.error(err);
       toast({
         title: "Hata",
         description:

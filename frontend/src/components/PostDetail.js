@@ -52,7 +52,7 @@ const PostDetail = () => {
         const postRes = await axios.get(`${API_URL}/posts/${id}`);
         setPost(postRes.data);
       } catch (error) {
-        console.error("Post detayları alınırken hata:", error);
+        // console.error("Post detayları alınırken hata:", error);
         toast({
           title: "Hata",
           description: "Post detayları alınırken bir hata oluştu.",
@@ -71,7 +71,7 @@ const PostDetail = () => {
         const commentsRes = await axios.get(`${API_URL}/comments?post_id=${id}`, config);
         setComments(commentsRes.data);
       } catch (error) {
-        console.error("Yorumlar alınırken hata:", error);
+        // console.error("Yorumlar alınırken hata:", error);
         toast({
           title: "Hata",
           description: "Yorumlar alınırken bir hata oluştu.",
@@ -130,7 +130,7 @@ const PostDetail = () => {
         isClosable: true,
       });
     } catch (error) {
-      console.error("Yorum eklenirken hata:", error);
+      // console.error("Yorum eklenirken hata:", error);
       toast({
         title: "Hata",
         description: "Yorum eklenirken bir hata oluştu.",
@@ -182,7 +182,7 @@ const PostDetail = () => {
           isClosable: true,
         });
       } catch (error) {
-        console.error("Beğeni eklenirken hata:", error);
+        // console.error("Beğeni eklenirken hata:", error);
         toast({
           title: "Hata",
           description: "Beğeni eklenirken bir hata oluştu.",
@@ -213,7 +213,7 @@ const PostDetail = () => {
           isClosable: true,
         });
       } catch (error) {
-        console.error("Beğeni kaldırılırken hata:", error);
+        // console.error("Beğeni kaldırılırken hata:", error);
         toast({
           title: "Hata",
           description: "Beğeni kaldırılırken bir hata oluştu.",

@@ -37,7 +37,7 @@ const PostGrid = () => {
 
          // 💥 Güvenli kontrol
       if (!Array.isArray(data)) {
-        console.error("Beklenmeyen veri formatı:", data);
+        // console.error("Beklenmeyen veri formatı:", data);
         setPosts([]);
         setHasMore(false);
         return;
@@ -50,7 +50,7 @@ const PostGrid = () => {
       }
       setHasMore(data.length >= limit);
     } catch (error) {
-      console.error("Postlar alınırken hata:", error);
+      // console.error("Postlar alınırken hata:", error);
     }
     setLoading(false);
   }, [API_URL, searchParams, searchTerm, limit]);
