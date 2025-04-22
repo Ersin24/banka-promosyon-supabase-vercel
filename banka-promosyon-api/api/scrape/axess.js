@@ -1,13 +1,12 @@
-// pages/api/scrape/axess.js
 import axios from "axios";
-import { cheerio } from "cheerio";
+import { load } from "cheerio";
+
 export default async function handler(req, res) {
-  const url =
-    "https://www.axess.com.tr/axess/kampanya/8/3403/chip-para-kampanyalari";
+  const url = "https://www.axess.com.tr/axess/kampanya/8/3403/chip-para-kampanyalari";
 
   try {
-    const { data } = await axios.get(url);
-    const $ = cheerio.load(data);
+    const { data: html } = await axios.get(url);
+    const $ = load(html); // ✅ cheerio kullanımı burada
 
     const kampanyalar = [];
 
@@ -20,17 +19,13 @@ export default async function handler(req, res) {
         : `https://www.axess.com.tr${relativeLink}`;
 
       if (title && fullLink) {
-        kampanyalar.push({
-          title,
-          image,
-          link: fullLink,
-        });
+        kampanyalar.push({ title, image, link: fullLink });
       }
     });
 
-    return res.status(200).json({ count: kampanyalar.length, kampanyalar });
+    return res.status(200).json(kampanyalar);
   } catch (err) {
-    console.error("Axess scraper hatası:", err.message);
-    return res.status(500).json({ error: "Veri çekme sırasında hata oluştu" });
+    console.error("Scrape Hatası:", err.message);
+    return res.status(500).json({ error: "Veriler alınamadı" });
   }
 }
