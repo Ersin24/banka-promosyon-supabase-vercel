@@ -1,35 +1,46 @@
-// /pages/api/scrape/worldcard.js
+// /api/scrape/worldcard.js
 import axios from "axios";
 
 export default async function handler(req, res) {
   try {
-    // Site’nin arka planda kullandığı endpoint’e istek at
+    // Worldcard'in sunduğu JSON API'yi doğrudan çağırıyoruz:
     const { data } = await axios.get(
-      "https://www.worldcard.com.tr/api/campaigns?campaignSectorId=0&campaignTypeId=0&keyword="
+      "https://www.worldcard.com.tr/api/campaigns",
+      {
+        params: {
+          campaignSectorId: 0,
+          campaignTypeId: 0,
+          keyword: "",
+        },
+      }
     );
 
-    // Gelen data.rc dizisi tüm kampanyaları içeriyor
-    const campaigns = (data.rc || []).map((item) => {
-      // Mutlaka tam URL yapalım
-      const link = item.Url.startsWith("http")
-        ? item.Url
-        : `https://www.worldcard.com.tr${item.Url}`;
-      const img = item.ImageUrl.startsWith("http")
-        ? item.ImageUrl
-        : `https://www.worldcard.com.tr${item.ImageUrl}`;
+    // data içinde muhtemelen { rc: [ ... ] } var
+    const list = data.rc || [];
 
+    const campaigns = list.map((item) => {
+      // item.Url, item.ImageUrl, item.PageTitle, item.EndDate, item.DaysLeft
+      let link = item.Url || "";
+      let img = item.ImageUrl || "";
+      // Tam yol değilse başına domain ekle
+      if (link && !link.startsWith("http")) {
+        link = "https://www.worldcard.com.tr" + link;
+      }
+      if (img && !img.startsWith("http")) {
+        img = "https://www.worldcard.com.tr" + img;
+      }
       return {
         link,
         img,
-        title: item.PageTitle,
-        endDate: item.EndDate,   // örn. "30.04.2025"
-        daysLeft: item.DaysLeft,  // örn. "8 Gün Kaldı"
+        title: item.PageTitle || item.TitleForAlt || "",
+        endDate: item.EndDate,      // "30.04.2025" gibi
+        daysLeft: item.DaysLeft,    // "8 Gün Kaldı" gibi
       };
     });
 
     res.status(200).json(campaigns);
   } catch (err) {
-    console.error("Worldcard scrape hatası:", err);
+    console.error("Worldcard scrape error:", err);
     res.status(500).json({ error: err.message });
   }
 }
