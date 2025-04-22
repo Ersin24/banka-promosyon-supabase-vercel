@@ -1,6 +1,6 @@
 // pages/api/scrape/axess.js
-import cheerio from "cheerio";
 import axios from "axios";
+const cheerio = require("cheerio");
 
 export default async function handler(req, res) {
   const url = "https://www.axess.com.tr/axess/kampanya/8/3403/chip-para-kampanyalari";
