@@ -1,46 +1,51 @@
-import chromium from "chrome-aws-lambda";
-import {load}  from "cheerio";
+// /api/scrape/worldcard.js
+import axios from "axios";
 
 export default async function handler(req, res) {
-  let browser = null;
   try {
-    browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-    });
-    const page = await browser.newPage();
-    await page.goto("https://www.worldcard.com.tr/kampanyalar", { waitUntil: "networkidle2" });
+    const {
+      campaignSectorId = 0,
+      campaignTypeId   = 0,
+      keyword           = ""
+    } = req.query;
 
-    // "Daha Fazla Göster" kalmayana dek tıkla
-    while (await page.$("a.show-more")) {
-      await Promise.all([
-        page.click("a.show-more"),
-        page.waitForTimeout(1000),
-      ]);
+    const BASE = "https://www.worldcard.com.tr/api/campaigns";
+    const PAGE_SIZE = 6;
+
+    let skip = 0;
+    const all = [];
+
+    while (true) {
+      const { data } = await axios.get(BASE, {
+        params: {
+          campaignSectorId,
+          campaignTypeId,
+          keyword,
+          skip,
+          take: PAGE_SIZE
+        }
+      });
+
+      if (!Array.isArray(data) || data.length === 0) break;
+      all.push(...data);
+      skip += data.length;
     }
 
-    const $ = cheerio.load(await page.content());
-    const campaigns = [];
-    $(".campaign-box .col-lg-4.col-md-6.col-6").each((_, el) => {
-      const $el      = $(el);
-      let   link     = $el.find("a").attr("href") || "";
-      let   img      = $el.find("img").attr("src")  || "";
-      const title    = $el.find("p").last().text().trim();
-      const endDate  = $el.find(".last-day p").text().replace("Son Gün", "").trim();
-      const daysLeft = $el.find(".last-day span").text().trim();
+    const formatted = all.map(item => ({
+      link:     item.Url.startsWith("http")
+                  ? item.Url
+                  : `https://www.worldcard.com.tr${item.Url}`,
+      img:      item.ImageUrl.startsWith("http")
+                  ? item.ImageUrl
+                  : `https://www.worldcard.com.tr${item.ImageUrl}`,
+      title:    item.PageTitle || item.TitleForAlt,
+      endDate:  item.EndDate,
+      daysLeft: item.DaysLeft
+    }));
 
-      if (link && !link.startsWith("http")) link = `https://www.worldcard.com.tr${link}`;
-      if (img  && !img.startsWith("http"))  img  = `https://www.worldcard.com.tr${img}`;
-      campaigns.push({ link, img, title, endDate, daysLeft });
-    });
-
-    res.status(200).json(campaigns);
+    res.status(200).json(formatted);
   } catch (err) {
-    console.error(err);
+    console.error("Worldcard scrape hata:", err);
     res.status(500).json({ error: err.message });
-  } finally {
-    if (browser) await browser.close();
   }
 }
