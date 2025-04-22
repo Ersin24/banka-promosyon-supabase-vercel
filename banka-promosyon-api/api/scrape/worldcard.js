@@ -1,91 +1,35 @@
-// /api/scrape/worldcard.js
-import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
-import { load } from "cheerio";
+// /pages/api/scrape/worldcard.js
+import axios from "axios";
 
 export default async function handler(req, res) {
-  let browser = null;
   try {
-    browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
-    const page = await browser.newPage();
+    // Site’nin arka planda kullandığı endpoint’e istek at
+    const { data } = await axios.get(
+      "https://www.worldcard.com.tr/api/campaigns?campaignSectorId=0&campaignTypeId=0&keyword="
+    );
 
-    // Önce temel sayfayı yükle
-    await page.goto("https://www.worldcard.com.tr/kampanyalar", {
-      waitUntil: "domcontentloaded",
-    });
-    // İlk 6 kampanyanın yüklenmesini bekle
-    await page.waitForSelector(".campaign-box .col-lg-4");
+    // Gelen data.rc dizisi tüm kampanyaları içeriyor
+    const campaigns = (data.rc || []).map((item) => {
+      // Mutlaka tam URL yapalım
+      const link = item.Url.startsWith("http")
+        ? item.Url
+        : `https://www.worldcard.com.tr${item.Url}`;
+      const img = item.ImageUrl.startsWith("http")
+        ? item.ImageUrl
+        : `https://www.worldcard.com.tr${item.ImageUrl}`;
 
-    // Eski sayı ile yeni sayı aynı olana dek “Daha Fazla Göster” butonuna bas
-    let prevCount = 0;
-    while (true) {
-      const items = await page.$$eval(
-        ".campaign-box .col-lg-4",
-        (els) => els.length
-      );
-      // Eğer eklenebilecek yeni öğe yoksa döngüyü kır
-      if (items === prevCount) break;
-      prevCount = items;
-
-      const btn = await page.$("a.show-more");
-      if (!btn) break;
-
-      // Buton görünene dek scroll et
-      await btn.evaluate((b) => b.scrollIntoView());
-      // Hem network isteği gelsin hem DOM değişsin diye Promise.all
-      await Promise.all([
-        page.waitForResponse(
-          (r) =>
-            r.url().includes("/api/campaigns") &&
-            r.status() === 200,
-          { timeout: 5000 }
-        ),
-        btn.click(),
-      ]);
-      // Yeni öğe eklenene dek bekle
-      await page.waitForFunction(
-        (prev) =>
-          document.querySelectorAll(".campaign-box .col-lg-4").length >
-          prev,
-        {},
-        prevCount
-      );
-    }
-
-    // Son olarak Cheerio ile çek
-    const $ = load(await page.content());
-    const campaigns = [];
-    $(".campaign-box .col-lg-4").each((_, el) => {
-      const $el = $(el);
-      let link = $el.find("a").attr("href") || "";
-      let img = $el.find("img").attr("src") || "";
-      const title = $el.find("p").last().text().trim();
-      const endDate = $el
-        .find(".last-day p")
-        .text()
-        .replace("Son Gün", "")
-        .trim();
-      const daysLeft = $el.find(".last-day span").text().trim();
-
-      if (link && !/^https?:\/\//.test(link)) {
-        link = `https://www.worldcard.com.tr${link}`;
-      }
-      if (img && !/^https?:\/\//.test(img)) {
-        img = `https://www.worldcard.com.tr${img}`;
-      }
-      campaigns.push({ link, img, title, endDate, daysLeft });
+      return {
+        link,
+        img,
+        title: item.PageTitle,
+        endDate: item.EndDate,   // örn. "30.04.2025"
+        daysLeft: item.DaysLeft,  // örn. "8 Gün Kaldı"
+      };
     });
 
-    return res.status(200).json(campaigns);
+    res.status(200).json(campaigns);
   } catch (err) {
-    console.error("Worldcard scrape hata:", err);
-    return res.status(500).json({ error: err.message });
-  } finally {
-    if (browser) await browser.close();
+    console.error("Worldcard scrape hatası:", err);
+    res.status(500).json({ error: err.message });
   }
 }
