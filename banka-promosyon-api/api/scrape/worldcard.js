@@ -1,53 +1,47 @@
 // pages/api/scrape/worldcard.js
-import axios from "axios";
-
 export default async function handler(req, res) {
-  try {
-    const allCampaigns = [];
-    let pageIndex = 0;
-    let totalItems = Infinity;
-    const pageSize = 50; // istersen burayı 100 de yapabilirsin
-
-    // Sayfalandırma: elimizdeki sayı < toplam öğe sayısı olduğu sürece çekmeye devam et
-    while (allCampaigns.length < totalItems) {
-      const { data } = await axios.get(
-        "https://www.worldcard.com.tr/api/campaigns",
-        {
-          params: {
-            campaignSectorId: 0,
-            campaignTypeId: 0,
-            keyword: "",
-            pageIndex,
-            pageSize,
-          },
-        }
-      );
-
-      // API bize her çağrıda bu ikisini döndürüyor
-      totalItems = data.TotalItems;
-      const items = data.Items;
-
-      // Gelen her maddeyi front-end’imize uygun formatta diziye ekle
-      for (const item of items) {
-        allCampaigns.push({
-          link: item.Url,
-          img: item.ImageUrl.startsWith("http")
-            ? item.ImageUrl
-            : `https://www.worldcard.com.tr${item.ImageUrl}`,
-          title: item.PageTitle,
-          endDate: item.EndDate.split("T")[0], // “2025-04-30”
-          daysLeft: item.DaysLeft,             // “8 Gün Kaldı”
+    try {
+      let allItems = [];
+      let pageIndex = 0;
+      let totalItems = Infinity;
+      const baseUrl = 'https://www.worldcard.com.tr/api/campaigns?campaignSectorId=0&campaignTypeId=0&keyword=';
+  
+      while (allItems.length < totalItems) {
+        const response = await fetch(baseUrl, {
+          method: 'GET',
+          headers: {
+            'Page': String(pageIndex),
+            'Accept': 'application/json'
+          }
         });
+        if (!response.ok) {
+          return res.status(response.status).json({ error: `Worldcard API hata: ${response.status}` });
+        }
+  
+        const data = await response.json();
+        totalItems = data.TotalItems;
+        allItems.push(...data.Items);
+  
+        // eğer bir sayfada hiç item yoksa kır
+        if (data.Items.length === 0) break;
+        pageIndex++;
       }
-
-      pageIndex++;
-      // Eğer Items.length < pageSize geldiyse zaten son sayfayı aldık, döngü kırılacak
-      if (items.length < pageSize) break;
+  
+      // Sadece ihtiyaç duyduğumuz alanları dönüyoruz
+      const campaigns = allItems.map(item => ({
+        link: item.Url,
+        img: item.ImageUrl.startsWith('http')
+          ? item.ImageUrl
+          : `https://www.worldcard.com.tr${item.ImageUrl}`,
+        title: item.PageTitle,
+        endDate: item.EndDate.split('T')[0],
+        daysLeft: item.DaysLeft
+      }));
+  
+      res.status(200).json(campaigns);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
     }
-
-    return res.status(200).json(allCampaigns);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: error.message });
   }
-}
+  
