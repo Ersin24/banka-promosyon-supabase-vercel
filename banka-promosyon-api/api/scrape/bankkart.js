@@ -1,8 +1,6 @@
-// /pages/api/scrape/bankkart.js
-
 export default async function handler(req, res) {
     try {
-      const baseUrl = 'https://www.bankkart.com.tr/api/campaigns';
+      const baseUrl = 'https://www.bankkart.com.tr/api/campaigns/list'; // URL değişti
       const campaigns = [];
   
       let page = 1;
@@ -10,17 +8,31 @@ export default async function handler(req, res) {
   
       while (keepFetching) {
         const response = await fetch(`${baseUrl}?page=${page}`, {
-          headers: { 'Accept': 'application/json' }
+          method: 'POST',
+          headers: { 
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "CampaignType": [],
+            "CardType": [],
+            "Sector": [],
+            "SortType": 1,
+            "CampaignFilterType": 1,
+            "Language": "tr",
+            "Page": page,
+            "PageSize": 100
+          })
         });
   
         if (!response.ok) throw new Error(`Sayfa ${page} hata: ${response.status}`);
   
         const data = await response.json();
   
-        if (data.length === 0) {
+        if (!data?.Data?.length) {
           keepFetching = false;
         } else {
-          campaigns.push(...data.map(item => ({
+          campaigns.push(...data.Data.map(item => ({
             link: `https://www.bankkart.com.tr${item.Url}`,
             img: item.ImageUrl.startsWith('http')
                   ? item.ImageUrl
