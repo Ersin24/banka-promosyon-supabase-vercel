@@ -10,6 +10,7 @@ const theme = extendTheme({
     normal: 400,
     medium: 500,
     semibold: 600,
+    bold: 700,
   },
   colors: {
     gradient: {
@@ -56,7 +57,7 @@ const theme = extendTheme({
     Heading: {
       baseStyle: {
         fontFamily: 'heading',
-        fontWeight: 'semibold',
+        fontWeight: 'normal',
       },
       sizes: {
         xl: {

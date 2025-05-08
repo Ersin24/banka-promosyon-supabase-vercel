@@ -111,7 +111,11 @@ const AdminPanel = () => {
           type="text"
           name="title"
           value={title}
-          onChange={(e) => setTitle(DOMPurify.sanitize(e.target.value))}
+          onChange={(e) => {
+            const raw = DOMPurify.sanitize(e.target.value);
+            const formatted = raw.charAt(0).toLocaleUpperCase("tr-TR")+ raw.slice(1).toLocaleLowerCase("tr-TR");
+            setTitle(formatted);  
+          }}
           placeholder="Post başlığını girin"
         />
       </FormControl>
