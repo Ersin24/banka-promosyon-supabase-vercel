@@ -21,7 +21,7 @@ const Profile = () => {
       }
       try {
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const res = await axios.get(`${API_URL}/auth/me`, config);
+        const res = await axios.get(`${API_URL}/auth`, config);
         setUser(res.data);
       } catch (error) {
         // console.error("Profil bilgisi alınırken hata:", error);

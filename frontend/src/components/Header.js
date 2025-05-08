@@ -121,6 +121,7 @@ const Header = ({ onOpenFilter }) => {
             <MenuList color="black">
               {isLoggedIn ? (
                 <>
+                  <MenuItem as={Link} to="/profil">Profil</MenuItem>
                   {isAdmin && (
                     <MenuItem as={Link} to="/admin-paneli">
                       Admin Paneli
