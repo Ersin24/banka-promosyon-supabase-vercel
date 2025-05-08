@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
-Sitemap: https://ceptebonus.com/sitemap.xml
+Sitemap: https://kampanya360.com/sitemap.xml
 

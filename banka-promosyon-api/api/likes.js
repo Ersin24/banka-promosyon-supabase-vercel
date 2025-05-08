@@ -8,7 +8,7 @@ if (!JWT_SECRET) {
   throw new Error("JWT_SECRET tanımsız!");
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
   setCorsHeaders(res, allowedOrigin);
 
@@ -91,3 +91,6 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: "Yönteme izin verilmiyor" });
 }
+
+export { handler };
+export default handler;

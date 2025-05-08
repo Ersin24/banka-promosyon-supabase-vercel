@@ -1,3 +1,4 @@
+//utils/supabase.js
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase URL ve Key, ortam değişkenlerinden okunuyor.

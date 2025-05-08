@@ -19,28 +19,28 @@ root.render(
 
 // src/index.js (en altına ekle)
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/service-worker.js")
-      .then((registration) => {
-        console.log("✅ Service Worker başarıyla kayıt oldu:", registration);
+// if ("serviceWorker" in navigator) {
+//   window.addEventListener("load", () => {
+//     navigator.serviceWorker
+//       .register("/service-worker.js")
+//       .then((registration) => {
+//         console.log("✅ Service Worker başarıyla kayıt oldu:", registration);
 
-        // Güncelleme kontrolü
-        registration.onupdatefound = () => {
-          const installingWorker = registration.installing;
-          installingWorker.onstatechange = () => {
-            if (installingWorker.state === "installed") {
-              if (navigator.serviceWorker.controller) {
-                // Yeni içerik mevcut
-                window.location.reload();
-              } 
-            }
-          };
-        };
-      })
-      .catch((err) => {
-        // console.error("🚨 Service Worker kaydı başarısız:", err);
-      });
-  });
-}
+//         // Güncelleme kontrolü
+//         registration.onupdatefound = () => {
+//           const installingWorker = registration.installing;
+//           installingWorker.onstatechange = () => {
+//             if (installingWorker.state === "installed") {
+//               if (navigator.serviceWorker.controller) {
+//                 // Yeni içerik mevcut
+//                 window.location.reload();
+//               } 
+//             }
+//           };
+//         };
+//       })
+//       .catch((err) => {
+//         // console.error("🚨 Service Worker kaydı başarısız:", err);
+//       });
+//   });
+// }

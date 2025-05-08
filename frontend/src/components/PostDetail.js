@@ -258,7 +258,7 @@ const PostDetail = () => {
   const seoTitle = `${post.bank_name} - ${post.title} | Banka Promosyonları`;
   const seoDescription = post.content.slice(0, 160);
   const seoKeywords = `${post.bank_name}, ${post.category}, banka kampanyası, promosyonlar`;
-  const seoUrl = `https://sitenizin-adresi.com/kampanyalar/${id}`;
+  const seoUrl = `https://kampanya360.com/kampanyalar/${id}`;
 
   return (
     <Box maxW={{ base: "100%", md: "70%" }} mx="auto" p={1}>
@@ -285,9 +285,9 @@ const PostDetail = () => {
               objectFit="cover"
               borderRadius="md"
               onError={(e) => {
-                if (e.target.src !== "/image-placeholder.svg") {
+                if (e.target.src !== "/yer-tutucu.png") {
                   e.target.onerror = null;
-                  e.target.src = "/image-placeholder.svg";
+                  e.target.src = "/yer-tutucu.png";
                 }
               }}
             />

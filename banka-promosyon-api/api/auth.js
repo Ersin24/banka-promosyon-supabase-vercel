@@ -9,7 +9,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
   setCorsHeaders(res, allowedOrigin);
   res.setHeader("Access-Control-Allow-Credentials", true); //ek olarak token
@@ -130,3 +130,6 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: "Yönteme izin verilmiyor" });
 }
+
+export { handler };
+export default handler;

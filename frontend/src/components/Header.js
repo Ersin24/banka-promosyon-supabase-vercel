@@ -79,10 +79,10 @@ const Header = ({ onOpenFilter }) => {
             fontSize={{ base: "18px", md: "24px" }}
           >
             <Text as="span" color="#374151">
-              Cepte
+              Kampanya
             </Text>
             <Text as="span" color="#10B981">
-              Bonus
+              360
             </Text>
           </Box>
         </Link>

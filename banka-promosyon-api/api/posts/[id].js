@@ -1,22 +1,28 @@
-// /api/posts/[id].js
+// api/posts/[id]
 import { supabase } from '../../utils/supabase.js';
 import { setCorsHeaders } from '../../utils/cors.js';
 
-export default async function handler(req, res) {
-  const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
+async function handler(req, res) {
+  const allowedOrigin = process.env.FRONTEND_ORIGIN?.replace(/\/+$/, "") || "*";
   setCorsHeaders(res, allowedOrigin);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  const { id } = req.query;
+  // ✅ ID'yi URL'den parçalayarak al
+  const id = req.url.split("/").pop();
+  const idNumber = parseInt(id, 10);
+
+  if (isNaN(idNumber)) {
+    return res.status(400).json({ error: "Geçersiz ID" });
+  }
 
   if (req.method === 'GET') {
     const { data, error } = await supabase
       .from('posts')
       .select('*')
-      .eq('id', id)
+      .eq('id', idNumber)
       .single();
 
     if (error) {
@@ -28,3 +34,6 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: 'Yönteme izin verilmiyor' });
 }
+
+export { handler };
+export default handler;

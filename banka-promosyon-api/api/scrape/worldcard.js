@@ -1,5 +1,5 @@
 // /pages/api/scrape/worldcard.js
-export default async function handler(req, res) {
+ async function handler(req, res) {
     try {
       const baseUrl = 'https://www.worldcard.com.tr/api/campaigns?campaignSectorId=0&campaignTypeId=0&keyword=';
       // 1) İlk sayfayı alıp toplam öğe sayısını (TotalItems) ve sayfa başına düşen öğe adedini bul
@@ -44,3 +44,6 @@ export default async function handler(req, res) {
     }
   }
   
+  
+  export { handler };
+  export default handler;

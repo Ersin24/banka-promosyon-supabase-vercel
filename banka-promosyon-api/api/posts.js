@@ -4,7 +4,7 @@ import { verifyToken, verifyAdmin } from "../utils/auth.js";
 import { sanitizeInput } from "../utils/sanitize.js";
 import { setCorsHeaders } from "../utils/cors.js";
 
-export default async function handler(req, res) {
+async function handler(req, res) {
 
   const allowedOrigin = process.env.FRONTEND_ORIGIN.replace(/\/+$/, "");
   setCorsHeaders(res, allowedOrigin);
@@ -109,3 +109,6 @@ export default async function handler(req, res) {
   }
  
 }
+
+export { handler };
+export default handler;
