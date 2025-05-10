@@ -79,7 +79,7 @@ const PostGrid = () => {
     <Box>
       <HStack mb={4}>
         <Input
-          placeholder="Arama..."
+          placeholder="Banka, sektör veya marka adı ara"
           value={searchTerm}
           name="searchTerm"
           onChange={(e) => setSearchTerm(DOMPurify.sanitize(e.target.value))}

@@ -129,7 +129,7 @@ const AdminPanel = () => {
           placeholder="Post açıklamasını girin"
         />
       </FormControl>
-      <FormControl id="imageUrl" mb={4}>
+      <FormControl id="imageUrl" mb={4} isRequired>
         <FormLabel>Resim URL</FormLabel>
         <Input
           type="text"
@@ -139,7 +139,7 @@ const AdminPanel = () => {
           placeholder="Resim URL'sini girin"
         />
       </FormControl>
-      <FormControl id="bankName" mb={4}>
+      <FormControl id="bankName" mb={4} isRequired>
         <FormLabel>Banka Adı</FormLabel>
         <ReactSelect
           options={bankOptions}
@@ -149,7 +149,7 @@ const AdminPanel = () => {
           onChange={setBankName}
         />
       </FormControl>
-      <FormControl id="category" mb={4}>
+      <FormControl id="category" mb={4} isRequired>
         <FormLabel>Kategori</FormLabel>
         <ReactSelect
           options={categoryOptions}

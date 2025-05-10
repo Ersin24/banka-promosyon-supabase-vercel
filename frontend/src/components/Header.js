@@ -73,9 +73,14 @@ const Header = ({ onOpenFilter }) => {
           style={{ textDecoration: "none" }}
           _hover={{ textDecoration: "none" }}
         >
+           {/* family=Poppins:wght@400;500;600;700&
+    family=Roboto:wght@400;500;600;700&
+    family=Inter:wght@400;500;600;700&
+    family=Nunito+Sans:wght@400;500;600;700&
+    display=swap" */}
           <Box
-            fontFamily="'Poppins', sans-serif"
-            fontWeight="bold"
+            fontFamily="'Inter', sans-serif"
+            fontWeight="semibold"
             fontSize={{ base: "18px", md: "24px" }}
           >
             <Text as="span" color="#374151">

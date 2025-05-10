@@ -65,7 +65,7 @@ const PostCard = ({ post }) => {
           {badgeText}
         </Badge>
         <Box p={{base: 3, md:4}}>
-          <Text noOfLines={2} fontWeight="normal" fontSize={{base: "md", md:"lg"}}>
+          <Text noOfLines={2} fontWeight="bold" fontSize={{base: "md", md:"lg"}}>
             {post.title}
           </Text>
           <HStack mt={2} spacing={{base: 1, md:2}} align="center">
