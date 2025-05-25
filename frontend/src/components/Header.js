@@ -79,7 +79,7 @@ const Header = ({ onOpenFilter }) => {
     family=Nunito+Sans:wght@400;500;600;700&
     display=swap" */}
           <Box
-            fontFamily="'Inter', sans-serif"
+            fontFamily="'Playball', cursive"
             fontWeight="semibold"
             fontSize={{ base: "18px", md: "24px" }}
           >

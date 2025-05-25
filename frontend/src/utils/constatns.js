@@ -21,4 +21,5 @@ export const bankOptions = [
     { value: "Fatura / Dijital Platform", label: "Fatura / Dijital Platform" },
     { value: "Eğitim / Kariyer", label: "Eğitim / Kariyer" },
     { value: "Yapı Market", label: "Yapı Market" },
+    { value: "Bankalara özel kampanyalar", label: "Bankalara özel kampanyalar" },
   ];

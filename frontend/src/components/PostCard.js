@@ -71,8 +71,8 @@ const PostCard = ({ post }) => {
           <HStack mt={2} spacing={{base: 1, md:2}} align="center">
             {post.bank_name && (
               <>
-                <FontAwesomeIcon icon={faBuildingColumns} />
-                <Text fontSize={{base: "xs", md:"sm"}}>{post.bank_name}</Text>
+                <FontAwesomeIcon icon={faBuildingColumns} fontSize={".9em"} />
+                <Text fontSize={{base: "xs", md:"xs"}}>{post.bank_name}</Text>
               </>
             )}
           </HStack>

@@ -16,7 +16,8 @@ import {
   AspectRatio,
   List,
   ListItem,
-  ListIcon
+  ListIcon,
+  Heading,
 } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -66,9 +67,14 @@ const PostDetail = () => {
     const fetchComments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+        const config = token
+          ? { headers: { Authorization: `Bearer ${token}` } }
+          : {};
         // GET sorgusunda, ilişkisel olarak usernames ve comment_likes verilerini da alıyoruz
-        const commentsRes = await axios.get(`${API_URL}/comments?post_id=${id}`, config);
+        const commentsRes = await axios.get(
+          `${API_URL}/comments?post_id=${id}`,
+          config
+        );
         setComments(commentsRes.data);
       } catch (error) {
         // console.error("Yorumlar alınırken hata:", error);
@@ -165,11 +171,17 @@ const PostDetail = () => {
 
     if (!liked) {
       try {
-        await axios.post(`${API_URL}/comment-likes`, { comment_id: commentId }, config);
+        await axios.post(
+          `${API_URL}/comment-likes`,
+          { comment_id: commentId },
+          config
+        );
         // Yerel state güncellemesi: yeni beğeni ekleniyor
         const updatedComment = {
           ...comment,
-          comment_likes: comment.comment_likes ? [...comment.comment_likes, { user_id: currentUserId }] : [{ user_id: currentUserId }],
+          comment_likes: comment.comment_likes
+            ? [...comment.comment_likes, { user_id: currentUserId }]
+            : [{ user_id: currentUserId }],
         };
         const newComments = [...comments];
         newComments[index] = updatedComment;
@@ -200,7 +212,9 @@ const PostDetail = () => {
         // Yerel state güncellemesi: beğeni kaldırılıyor
         const updatedComment = {
           ...comment,
-          comment_likes: comment.comment_likes.filter((like) => like.user_id !== currentUserId),
+          comment_likes: comment.comment_likes.filter(
+            (like) => like.user_id !== currentUserId
+          ),
         };
         const newComments = [...comments];
         newComments[index] = updatedComment;
@@ -227,10 +241,10 @@ const PostDetail = () => {
 
   const today = new Date();
   today.setHours(0, 0, 0, 0); // 🔒 Günlük hesaplama için saat sıfırlama
-  
+
   const postEndDate = post ? new Date(post.end_date) : today;
   postEndDate.setHours(0, 0, 0, 0); // 🔒 Aynı şekilde bitiş tarihini de sıfırla
-  
+
   const timeDiff = postEndDate - today;
   const remainingDays = Math.floor(timeDiff / (1000 * 3600 * 24));
   const isExpired = remainingDays < 0;
@@ -252,7 +266,9 @@ const PostDetail = () => {
   }
 
   // İçeriği satır sonlarına göre bölüyoruz.
-  const sentences = post.content.split(/(?<=[.!?])\s+/).filter(sentence => sentence.trim() !== "");
+  const sentences = post.content
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => sentence.trim() !== "");
 
   // SEO için dinamik içerik ayarlaması
   const seoTitle = `${post.bank_name} - ${post.title} | Banka Promosyonları`;
@@ -272,12 +288,16 @@ const PostDetail = () => {
 
       <Flex direction={{ base: "column", md: "row" }} gap={4} align="center">
         <Box w={{ base: "100%", md: "50%" }}>
-          <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="bold">
+          <Heading
+            as={"h1"}
+            fontSize={{ base: "xl", md: "2xl" }}
+            fontWeight="bold"
+          >
             {post.title}
-          </Text>
+          </Heading>
         </Box>
         <Box w={{ base: "100%", md: "50%" }}>
-          <AspectRatio ratio={16/9}>
+          <AspectRatio ratio={16 / 9}>
             <Image
               loading="lazy"
               src={post.image_url}
@@ -296,7 +316,16 @@ const PostDetail = () => {
       </Flex>
 
       <Box mt={4}>
-        <List spacing={2}>
+        <Heading as={"h2"}  mt={4} fontSize={{ base: "md", md: "lg" }} fontStyle="italic">
+           {post.summary}
+        </Heading>
+      </Box>
+
+      <Box mt={4}>
+        <Heading fontWeight={"bold"} fontSize={"sm"} as={"h3"}>
+          Kampanya Detay
+        </Heading>
+        <List mt={3} spacing={2}>
           {sentences.map((sentence, idx) => (
             <ListItem key={idx} fontFamily={"serif"}>
               <ListIcon as={FaArrowRight} color={"green.500"} /> {sentence}
@@ -329,7 +358,9 @@ const PostDetail = () => {
           <Input
             placeholder="Yorum..."
             value={commentContent}
-            onChange={(e) => setCommentContent(DOMPurify.sanitize(e.target.value))}
+            onChange={(e) =>
+              setCommentContent(DOMPurify.sanitize(e.target.value))
+            }
             autoComplete="off"
           />
         </FormControl>
@@ -342,9 +373,13 @@ const PostDetail = () => {
           <VStack spacing={4} align="stretch">
             {comments.map((comment) => {
               // Hesaplama: beğeni sayısını ve mevcut kullanıcının beğenip beğenmediğini belirleyelim
-              const likeCount = comment.comment_likes ? comment.comment_likes.length : 0;
+              const likeCount = comment.comment_likes
+                ? comment.comment_likes.length
+                : 0;
               const liked = comment.comment_likes
-                ? comment.comment_likes.some(like => like.user_id === currentUserId)
+                ? comment.comment_likes.some(
+                    (like) => like.user_id === currentUserId
+                  )
                 : false;
 
               return (

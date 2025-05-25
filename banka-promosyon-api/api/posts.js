@@ -66,6 +66,7 @@ async function handler(req, res) {
   
       const {
         title,
+        summary,
         content,
         image_url,
         bank_name,
@@ -74,19 +75,21 @@ async function handler(req, res) {
         end_date,
       } = req.body;
 
-      if (!title || !content || !start_date || !end_date) {
+      if (!title || !summary || !content || !image_url || !bank_name || !category || !start_date || !end_date) {
         return res.status(400).json({ error: "Zorunlu alanlar eksik" });
       }
 
-      const cleanTitle = sanitizeInput(title)
-      const cleanContent = sanitizeInput(content)
-      const cleanImageUrl = sanitizeInput(image_url)
+      const cleanTitle = sanitizeInput(title);
+      const cleanContent = sanitizeInput(content);
+      const cleanImageUrl = sanitizeInput(image_url);
+      const cleanSummary = sanitizeInput(summary);
   
       const { data, error } = await supabase
         .from("posts")
         .insert([
           {
             title: cleanTitle,
+            summary: cleanSummary,
             content: cleanContent,
             image_url: cleanImageUrl,
             bank_name,

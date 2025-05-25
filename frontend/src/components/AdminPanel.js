@@ -18,6 +18,7 @@ import { bankOptions, categoryOptions } from "../utils/constatns.js";
 
 const AdminPanel = () => {
   const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [bankName, setBankName] = useState(null);
@@ -30,10 +31,18 @@ const AdminPanel = () => {
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
 
   const handleSubmit = async () => {
-    if (!title || !content || !startDate || !endDate) {
+
+
+      // Tüm verileri önce temizle
+    const trimmedTitle = title.trim();
+    const trimmedSummary = summary.trim();
+    const trimmedContent = content.trim();
+    const trimmedImageUrl = imageUrl.trim();
+
+    if (!trimmedTitle || !trimmedSummary || !trimmedContent || !trimmedImageUrl || !bankName || !category || !startDate || !endDate) {
       toast({
         title: "Hata",
-        description: "Başlık, açıklama, başlangıç ve bitiş tarihi zorunludur.",
+        description: "Tüm alanların girilmesi zorunludur!",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -61,9 +70,10 @@ const AdminPanel = () => {
       await axios.post(
         `${API_URL}/posts`,
         {
-          title,
-          content,
-          image_url: imageUrl,
+          title: trimmedTitle,
+          summary: trimmedSummary,
+          content: trimmedContent,
+          image_url: trimmedImageUrl,
           bank_name: bankName ? bankName.value : "",
           category: category ? category.value : "",
           start_date: startDate,
@@ -79,6 +89,7 @@ const AdminPanel = () => {
         isClosable: true,
       });
       setTitle("");
+      setSummary("");
       setContent("");
       setImageUrl("");
       setBankName(null);
@@ -117,6 +128,16 @@ const AdminPanel = () => {
             setTitle(formatted);  
           }}
           placeholder="Post başlığını girin"
+        />
+      </FormControl>
+      <FormControl id="summary" mb={4} isRequired>
+        <FormLabel>Kısa Özet</FormLabel>
+        <Textarea
+          type="text"
+          name="summary"
+          value={summary}
+          onChange={(e) => setSummary(DOMPurify.sanitize(e.target.value))}
+          placeholder="Kampanyanın kısa özetini girin"
         />
       </FormControl>
       <FormControl id="content" mb={4} isRequired>
